@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { spring } from 'svelte/motion';
+	import CounterDisplay from './CounterDisplay.svelte';
 
 	let count = 0;
 
@@ -20,6 +21,14 @@
 		</svg>
 	</button>
 
+	<CounterDisplay
+		{count}
+		changeCount={(cnt) => {
+			console.log('count');
+			console.log(cnt);
+			count = cnt;
+		}}
+	/>
 	<div class="counter-viewport">
 		<div class="counter-digits" style="transform: translate(0, {100 * offset}%)">
 			<strong class="hidden" aria-hidden="true">{Math.floor($displayed_count + 1)}</strong>
