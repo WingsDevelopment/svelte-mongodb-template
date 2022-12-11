@@ -26,7 +26,7 @@
 	}
 </script>
 
-<form method="POST">
+<form method="POST" on:submit|preventDefault={handleSubmit}>
 	<input name="name" type="name" />
 	<button>Create test</button>
 </form>

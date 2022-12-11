@@ -6,7 +6,7 @@
 	console.log(data.cars);
 </script>
 
-<h1>Select a car</h1>
+<h1 class="text-3xl font-bold underline">Hello from tailwind!</h1>
 <ul>
 	{#each data.cars as car}
 		<li>
