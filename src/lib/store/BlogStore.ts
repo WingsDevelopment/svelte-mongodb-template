@@ -1,8 +1,8 @@
 import {
 	type Blog,
 	removeRow,
-	addCodeRow,
-	updateCodeRow,
+	addCodeRow as addCodeRowItem,
+	updateCodeRow as updateCodeRowItem,
 	addTextRow,
 	updateTextRow,
 	addImageRow,
@@ -18,7 +18,8 @@ import {
 	removeNote,
 	updateComment,
 	blogCtr,
-	removeComment
+	removeComment,
+	removeItemFromRow
 } from '$lib/models/Blog';
 import { writable } from 'svelte/store';
 
@@ -27,14 +28,13 @@ const { subscribe, update } = writable<Blog>({ ...emptyBlog });
 const BlogStore = {
 	subscribe,
 	removeRow: (rowId: string) => update((blog) => (blog = removeRow(blog, rowId))),
-	addCodeRow: (newRowId: string, code: string) =>
+	removeItemFromRow: (rowId: string) => update((blog) => (blog = removeItemFromRow(blog, rowId))),
+	addCodeRowItem: (rowId: string, code: string) =>
 		update((blog) => {
-			const { scBlog } = addCodeRow(blog, newRowId, code);
-			blog = scBlog;
-			return blog;
+			return addCodeRowItem(blog, rowId, code);
 		}),
-	updateCodeRow: (rowId: string, code: string) =>
-		update((blog) => (blog = updateCodeRow(blog, rowId, code))),
+	updateCodeRowItem: (rowId: string, code: string) =>
+		update((blog) => (blog = updateCodeRowItem(blog, rowId, code))),
 	addTextRow: (newRowId: string, text: string) =>
 		update((blog) => {
 			const { scBlog } = addTextRow(blog, newRowId, text);
@@ -43,35 +43,29 @@ const BlogStore = {
 		}),
 	updateTextRow: (rowId: string, text: string) =>
 		update((blog) => (blog = updateTextRow(blog, rowId, text))),
-	addImageRow: (newRowId: string, imageUrl: string) =>
+	updateRowText: (rowId: string, text: string) =>
+		update((blog) => (blog = updateTextRow(blog, rowId, text))),
+	addImageRowItem: (rowId: string, imageUrl: string) =>
 		update((blog) => {
-			const { scBlog } = addImageRow(blog, newRowId, imageUrl);
-			blog = scBlog;
-			return blog;
+			return addImageRow(blog, rowId, imageUrl);
 		}),
-	updateImageRow: (rowId: string, imageUrl: string) =>
+	updateImageRowItem: (rowId: string, imageUrl: string) =>
 		update((blog) => (blog = updateImageRow(blog, rowId, imageUrl))),
-	addVideoRow: (newRowId: string, videoUrl: string) =>
+	addVideoRowItem: (rowId: string, videoUrl: string) =>
 		update((blog) => {
-			const { scBlog } = addVideoRow(blog, newRowId, videoUrl);
-			blog = scBlog;
-			return blog;
+			return addVideoRow(blog, rowId, videoUrl);
 		}),
-	updateVideoRow: (rowId: string, videoUrl: string) =>
+	updateVideoRowItem: (rowId: string, videoUrl: string) =>
 		update((blog) => (blog = updateVideoRow(blog, rowId, videoUrl))),
-	addEmbedRow: (newRowId: string, embedUrl: string) =>
+	addEmbedRowItem: (rowId: string, embedUrl: string) =>
 		update((blog) => {
-			const { scBlog } = addEmbedRow(blog, newRowId, embedUrl);
-			blog = scBlog;
-			return blog;
+			return addEmbedRow(blog, rowId, embedUrl);
 		}),
-	updateEmbedRow: (rowId: string, embedUrl: string) =>
+	updateEmbedRowItem: (rowId: string, embedUrl: string) =>
 		update((blog) => (blog = updateEmbedRow(blog, rowId, embedUrl))),
-	addSeparatorRow: (newRowId: string) =>
+	addSeparatorRowItem: (rowId: string) =>
 		update((blog) => {
-			const { scBlog } = addSeparatorRow(blog, newRowId);
-			blog = scBlog;
-			return blog;
+			return addSeparatorRow(blog, rowId);
 		}),
 	addNote: (newNoteId: string, text: string) =>
 		update((blog) => {

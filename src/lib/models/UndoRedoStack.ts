@@ -1,6 +1,13 @@
-import BlogStore from '$lib/store/BlogStore';
 import createNewGuid from '$lib/wrappers/createNewGuid';
-import { type Blog, getNoteById, type CodeBlogContentRow } from './Blog';
+import {
+	type Blog,
+	getNoteById,
+	type BlogContentNote,
+	type BlogContentNoteComment,
+	type BlogContentRow,
+	BlogContentRowType
+} from '$lib/models/Blog';
+import BlogStore from '$lib/store/BlogStore';
 
 export interface Command {
 	execute(): void;
@@ -29,6 +36,8 @@ export const execute = (stack: UndoRedoStack, command: Command) => {
 export const undo = (stack: UndoRedoStack) => {
 	const scStack = { ...stack };
 	const command = stack.undoStack.pop();
+	// console.log('stack.undoStack');
+	// console.log(stack.undoStack);
 	if (command) {
 		command.undo();
 		scStack.redoStack.push(command);
@@ -48,17 +57,15 @@ export const redo = (stack: UndoRedoStack) => {
 	return scStack;
 };
 
-export const createAddCodeRowCommand = (code: string) => {
-	const newRowId = createNewGuid();
-
+export const createAddCodeRowItemCommand = (rowId: string, code: string) => {
 	return {
-		rowId: newRowId,
+		rowId,
 		code,
 		execute: () => {
-			BlogStore.addCodeRow(newRowId, code);
+			BlogStore.addCodeRowItem(rowId, code);
 		},
 		undo: () => {
-			BlogStore.removeRow(newRowId);
+			BlogStore.removeItemFromRow(rowId);
 		}
 	};
 };
@@ -78,76 +85,53 @@ export const createAddTextRowCommand = (text: string) => {
 	};
 };
 
-export const createImageRowCommand = (imageUrl: string) => {
-	const newRowId = createNewGuid();
-
+export const createAddImageRowItemCommand = (rowId: string, imageUrl: string) => {
 	return {
-		rowId: newRowId,
+		rowId,
 		imageUrl,
 		execute: () => {
-			BlogStore.addImageRow(newRowId, imageUrl);
+			BlogStore.addImageRowItem(rowId, imageUrl);
 		},
 		undo: () => {
-			BlogStore.removeRow(newRowId);
+			BlogStore.removeItemFromRow(rowId);
 		}
 	};
 };
 
-export const createVideoRowCommand = (videoUrl: string) => {
-	const newRowId = createNewGuid();
-
+export const createAddVideoRowItemCommand = (rowId: string, videoUrl: string) => {
 	return {
-		rowId: newRowId,
+		rowId,
 		videoUrl,
 		execute: () => {
-			BlogStore.addVideoRow(newRowId, videoUrl);
+			BlogStore.addVideoRowItem(rowId, videoUrl);
 		},
 		undo: () => {
-			BlogStore.removeRow(newRowId);
+			BlogStore.removeItemFromRow(rowId);
 		}
 	};
 };
 
-export const createEmbedRow = (embedUrl: string) => {
-	const newRowId = createNewGuid();
-
+export const createAddEmbedRowItemCommand = (rowId: string, embedUrl: string) => {
 	return {
-		rowId: newRowId,
+		rowId,
 		embedUrl,
 		execute: () => {
-			BlogStore.addEmbedRow(newRowId, embedUrl);
+			BlogStore.addEmbedRowItem(rowId, embedUrl);
 		},
 		undo: () => {
-			BlogStore.removeRow(newRowId);
+			BlogStore.removeItemFromRow(rowId);
 		}
 	};
 };
 
-export const createSeparatorRowCommand = () => {
-	const newRowId = createNewGuid();
-
+export const createAddSeparatorRowItemCommand = (rowId: string) => {
 	return {
-		rowId: newRowId,
+		rowId,
 		execute: () => {
-			BlogStore.addSeparatorRow(newRowId);
+			BlogStore.addSeparatorRowItem(rowId);
 		},
 		undo: () => {
-			BlogStore.removeRow(newRowId);
-		}
-	};
-};
-
-export const createAddNoteCommand = (note: string) => {
-	const noteId = createNewGuid();
-
-	return {
-		noteId,
-		note,
-		execute: () => {
-			BlogStore.addNote(noteId, note);
-		},
-		undo: () => {
-			BlogStore.removeNote(noteId);
+			BlogStore.removeItemFromRow(rowId);
 		}
 	};
 };
@@ -168,14 +152,193 @@ export const createUpdateNoteTextCommand = (blog: Blog, noteId: string, text: st
 	};
 };
 
-export const createRemoveCodeRowCommand = (row: CodeBlogContentRow) => {
+export const createRemoveCodeRowItemCommand = (row: BlogContentRow) => {
+	return {
+		row,
+		execute: () => {
+			BlogStore.removeItemFromRow(row.id);
+		},
+		undo: () => {
+			if (row?.item?.type !== BlogContentRowType.Code)
+				throw new Error('Row item is not a code item');
+			BlogStore.addCodeRowItem(row.id, row?.item?.code);
+		}
+	};
+};
+
+export const createRemoveTextRowCommand = (row: BlogContentRow) => {
 	return {
 		row,
 		execute: () => {
 			BlogStore.removeRow(row.id);
 		},
 		undo: () => {
-			BlogStore.addCodeRow(row.id, row.code);
+			BlogStore.addTextRow(row.id, row.text);
+		}
+	};
+};
+
+export const createUpdateTextRowCommand = (row: BlogContentRow, text: string) => {
+	const oldText = row.text;
+	return {
+		row,
+		text,
+		execute: () => {
+			BlogStore.updateRowText(row.id, text);
+		},
+		undo: () => {
+			BlogStore.updateRowText(row.id, oldText);
+		}
+	};
+};
+
+export const createRemoveImageRowCommand = (row: BlogContentRow) => {
+	return {
+		row,
+		execute: () => {
+			BlogStore.removeRow(row.id);
+		},
+		undo: () => {
+			if (row?.item?.type !== BlogContentRowType.Image)
+				throw new Error('Row item is not an image item');
+			BlogStore.addImageRowItem(row.id, row?.item?.imageUrl);
+		}
+	};
+};
+
+export const createRemoveVideoRowCommand = (row: BlogContentRow) => {
+	return {
+		row,
+		execute: () => {
+			BlogStore.removeRow(row.id);
+		},
+		undo: () => {
+			if (row?.item?.type !== BlogContentRowType.Video)
+				throw new Error('Row item is not a video item');
+			BlogStore.addVideoRowItem(row.id, row?.item?.videoUrl);
+		}
+	};
+};
+
+export const createRemoveEmbedRowCommand = (row: BlogContentRow) => {
+	return {
+		row,
+		execute: () => {
+			BlogStore.removeRow(row.id);
+		},
+		undo: () => {
+			if (row?.item?.type !== BlogContentRowType.Embed)
+				throw new Error('Row item is not an embed item');
+			BlogStore.addEmbedRowItem(row.id, row?.item?.embedUrl);
+		}
+	};
+};
+
+export const createRemoveSeparatorRowCommand = (row: BlogContentRow) => {
+	return {
+		row,
+		execute: () => {
+			BlogStore.removeRow(row.id);
+		},
+		undo: () => {
+			BlogStore.addSeparatorRowItem(row.id);
+		}
+	};
+};
+
+export const createAddNoteCommand = (note: string) => {
+	const noteId = createNewGuid();
+
+	return {
+		noteId,
+		note,
+		execute: () => {
+			BlogStore.addNote(noteId, note);
+		},
+		undo: () => {
+			BlogStore.removeNote(noteId);
+		}
+	};
+};
+
+export const createRemoveNoteCommand = (note: BlogContentNote) => {
+	return {
+		note,
+		execute: () => {
+			BlogStore.removeNote(note.id);
+		},
+		undo: () => {
+			BlogStore.addNote(note.id, note.text);
+		}
+	};
+};
+
+export const createUpdateNoteCommand = (note: BlogContentNote, text: string) => {
+	return {
+		text,
+		note,
+		oldTitle: text,
+		execute: () => {
+			BlogStore.updateNoteText(note.id, text);
+		},
+		undo: () => {
+			BlogStore.updateNoteText(note.id, text);
+		}
+	};
+};
+
+export const createAddCommentCommand = (
+	comment: BlogContentNoteComment,
+	note: BlogContentNote,
+	text: string
+) => {
+	const newCommentId = createNewGuid();
+
+	return {
+		text,
+		comment,
+		newCommentId,
+		note,
+		execute: () => {
+			BlogStore.addComment(newCommentId, note.id, text);
+		},
+		undo: () => {
+			BlogStore.removeComment(newCommentId, note.id);
+		}
+	};
+};
+
+export const createRemoveCommentCommand = (
+	comment: BlogContentNoteComment,
+	note: BlogContentNote
+) => {
+	return {
+		comment,
+		note,
+		execute: () => {
+			BlogStore.removeComment(comment.id, note.id);
+		},
+		undo: () => {
+			BlogStore.addComment(comment.id, note.id, comment.text);
+		}
+	};
+};
+
+export const createUpdateCommentCommand = (
+	comment: BlogContentNoteComment,
+	note: BlogContentNote,
+	text: string
+) => {
+	return {
+		text,
+		comment,
+		note,
+		oldText: comment.text,
+		execute: () => {
+			BlogStore.updateComment(comment.id, note.id, text);
+		},
+		undo: () => {
+			BlogStore.updateComment(comment.id, note.id, comment.text);
 		}
 	};
 };

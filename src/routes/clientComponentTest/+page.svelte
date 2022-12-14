@@ -9,9 +9,10 @@
 
 	const unsubscribe = BlogStore.subscribe((value) => {
 		blog = value;
+		// console.log(blog);
 	});
 
-	const { addCodeRowCommand, removeRowCommand, undo, redo } = CommandStore;
+	const { addTextRowCommand, undo, redo } = CommandStore;
 
 	onDestroy(() => {
 		unsubscribe();
@@ -24,6 +25,6 @@
 	{/each}
 </ul>
 
-<button on:click={() => addCodeRowCommand('test')}>Add Code Row</button>
+<button on:click={() => addTextRowCommand('test')}>Add Text Row</button>
 <button on:click={() => undo()}>Undo</button>
 <button on:click={() => redo()}>Redo</button>

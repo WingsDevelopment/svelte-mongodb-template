@@ -17,7 +17,12 @@ export const blogCtr = () => ({
 	isPublished: false,
 	updatedAt: new Date(),
 	content: {
-		rows: [],
+		rows: [
+			{
+				id: '1',
+				text: 'Tell us your story. . .'
+			}
+		],
 		notesHolder: []
 	},
 	previewImageUrl: '',
@@ -27,21 +32,12 @@ export const blogCtr = () => ({
 	isPremium: false
 });
 
-export type BlogContentRow =
-	| ImageBlogContentRow
-	| VideoBlogContentRow
-	| EmbedBlogContentRow
-	| CodeBlogContentRow
-	| SeparatorBlogContentRow
-	| TextBlogContentRow;
-
 export enum BlogContentRowType {
 	Image,
 	Video,
 	Embed,
 	Code,
-	Separator,
-	Text
+	Separator
 }
 
 export interface BlogContent {
@@ -49,38 +45,44 @@ export interface BlogContent {
 	notesHolder: BlogContentNote[];
 }
 
-export interface BaseBlogContentRow {
+export interface BlogContentRow {
 	id: string;
-	type: BlogContentRowType;
+	text: string;
+	item?: BlogContentRowItemType;
 }
 
-export interface ImageBlogContentRow extends BaseBlogContentRow {
+export type BlogContentRowItemType =
+	| ImageBlogContentItem
+	| VideoBlogContentItem
+	| EmbedBlogContentItem
+	| CodeBlogContentItem
+	| SeparatorBlogContentItem;
+
+export interface BaseRowItem {
+	type: BlogContentRowType;
+}
+export interface ImageBlogContentItem extends BaseRowItem {
 	type: BlogContentRowType.Image;
 	imageUrl: string;
 }
 
-export interface VideoBlogContentRow extends BaseBlogContentRow {
+export interface VideoBlogContentItem extends BaseRowItem {
 	type: BlogContentRowType.Video;
 	videoUrl: string;
 }
 
-export interface EmbedBlogContentRow extends BaseBlogContentRow {
+export interface EmbedBlogContentItem extends BaseRowItem {
 	type: BlogContentRowType.Embed;
 	embedUrl: string;
 }
 
-export interface CodeBlogContentRow extends BaseBlogContentRow {
+export interface CodeBlogContentItem extends BaseRowItem {
 	type: BlogContentRowType.Code;
 	code: string;
 }
 
-export interface SeparatorBlogContentRow extends BaseBlogContentRow {
+export interface SeparatorBlogContentItem extends BaseRowItem {
 	type: BlogContentRowType.Separator;
-}
-
-export interface TextBlogContentRow extends BaseBlogContentRow {
-	type: BlogContentRowType.Text;
-	text: string;
 }
 
 export interface BlogContentNote {
@@ -123,27 +125,37 @@ export const removeRow = (blog: Blog, rowId: string) => {
 	return scBlog;
 };
 
-export const addCodeRow = (blog: Blog, newRowId: string, code: string) => {
+export const removeItemFromRow = (blog: Blog, rowId: string) => {
+	const scBlog = { ...blog };
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+	if (!row.item) throw new Error('Row has no item');
+
+	row.item = undefined;
+	return scBlog;
+};
+
+export const addCodeRow = (blog: Blog, rowId: string, code: string) => {
 	const scBlog = { ...blog };
 
-	scBlog.content.rows.push({
-		id: newRowId,
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+
+	row.item = {
 		type: BlogContentRowType.Code,
 		code
-	});
-	return {
-		scBlog,
-		newRowId
 	};
+
+	return scBlog;
 };
 
 export const updateCodeRow = (blog: Blog, rowId: string, code: string) => {
 	const scBlog = { ...blog };
 	const row = scBlog.content.rows.find((x) => x.id === rowId);
-	if (!row) throw new Error('Row not found');
-	if (row.type !== BlogContentRowType.Code) throw new Error('Row is not of type code');
+	if (!row?.item) throw new Error('Row | Item not found');
+	if (row.item?.type !== BlogContentRowType.Code) throw new Error('Item is not of type code');
 
-	row.code = code;
+	row.item.code = code;
 	return scBlog;
 };
 
@@ -152,9 +164,9 @@ export const addTextRow = (blog: Blog, newRowId: string, text: string) => {
 
 	scBlog.content.rows.push({
 		id: newRowId,
-		type: BlogContentRowType.Text,
 		text
 	});
+
 	return {
 		scBlog,
 		newRowId
@@ -165,95 +177,95 @@ export const updateTextRow = (blog: Blog, rowId: string, text: string) => {
 	const scBlog = { ...blog };
 	const row = scBlog.content.rows.find((x) => x.id === rowId);
 	if (!row) throw new Error('Row not found');
-	if (row.type !== BlogContentRowType.Text) throw new Error('Row is not of type text');
+	if (row.item !== undefined) throw new Error('Row has item');
 
 	row.text = text;
 	return scBlog;
 };
 
-export const addImageRow = (blog: Blog, newRowId: string, imageUrl: string) => {
+export const addImageRow = (blog: Blog, rowId: string, imageUrl: string) => {
 	const scBlog = { ...blog };
 
-	scBlog.content.rows.push({
-		id: newRowId,
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+
+	row.item = {
 		type: BlogContentRowType.Image,
 		imageUrl
-	});
-	return {
-		scBlog,
-		newRowId
 	};
+
+	return scBlog;
 };
 
 export const updateImageRow = (blog: Blog, rowId: string, imageUrl: string) => {
 	const scBlog = { ...blog };
 	const row = scBlog.content.rows.find((x) => x.id === rowId);
-	if (!row) throw new Error('Row not found');
-	if (row.type !== BlogContentRowType.Image) throw new Error('Row is not of type image');
+	if (!row?.item) throw new Error('Row | item not found');
+	if (row.item.type !== BlogContentRowType.Image) throw new Error('Item is not of type image');
 
-	row.imageUrl = imageUrl;
+	row.item.imageUrl = imageUrl;
 	return scBlog;
 };
 
-export const addVideoRow = (blog: Blog, newRowId: string, videoUrl: string) => {
+export const addVideoRow = (blog: Blog, rowId: string, videoUrl: string) => {
 	const scBlog = { ...blog };
 
-	scBlog.content.rows.push({
-		id: newRowId,
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+
+	row.item = {
 		type: BlogContentRowType.Video,
 		videoUrl
-	});
-	return {
-		scBlog,
-		newRowId
 	};
+
+	return scBlog;
 };
 
 export const updateVideoRow = (blog: Blog, rowId: string, videoUrl: string) => {
 	const scBlog = { ...blog };
 	const row = scBlog.content.rows.find((x) => x.id === rowId);
-	if (!row) throw new Error('Row not found');
-	if (row.type !== BlogContentRowType.Video) throw new Error('Row is not of type video');
+	if (!row?.item) throw new Error('Row | item not found');
+	if (row.item.type !== BlogContentRowType.Video) throw new Error('Item is not of type video');
 
-	row.videoUrl = videoUrl;
+	row.item.videoUrl = videoUrl;
 	return scBlog;
 };
 
-export const addEmbedRow = (blog: Blog, newRowId: string, embedUrl: string) => {
+export const addEmbedRow = (blog: Blog, rowId: string, embedUrl: string) => {
 	const scBlog = { ...blog };
 
-	scBlog.content.rows.push({
-		id: newRowId,
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+
+	row.item = {
 		type: BlogContentRowType.Embed,
 		embedUrl
-	});
-	return {
-		scBlog,
-		newRowId
 	};
+
+	return scBlog;
 };
 
 export const updateEmbedRow = (blog: Blog, rowId: string, embedUrl: string) => {
 	const scBlog = { ...blog };
 	const row = scBlog.content.rows.find((x) => x.id === rowId);
-	if (!row) throw new Error('Row not found');
-	if (row.type !== BlogContentRowType.Embed) throw new Error('Row is not of type embed');
+	if (!row?.item) throw new Error('Row | item not found');
+	if (row.item.type !== BlogContentRowType.Embed) throw new Error('Item is not of type embed');
 
-	row.embedUrl = embedUrl;
+	row.item.embedUrl = embedUrl;
 	return scBlog;
 };
 
-export const addSeparatorRow = (blog: Blog, newRowId: string) => {
+export const addSeparatorRow = (blog: Blog, rowId: string) => {
 	const scBlog = { ...blog };
 
-	scBlog.content.rows.push({
-		id: newRowId,
+	const row = scBlog.content.rows.find((x) => x.id === rowId);
+	if (!row) throw new Error('Row not found');
+
+	row.item = {
 		type: BlogContentRowType.Separator
-	});
-	return {
-		scBlog,
-		newRowId
 	};
+
+	return scBlog;
 };
 
 export const addNote = (blog: Blog, newNoteId: string, text: string) => {
