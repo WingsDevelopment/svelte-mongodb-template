@@ -31,6 +31,12 @@
 			<li aria-current={$page.url.pathname.startsWith('/createTest') ? 'page' : undefined}>
 				<a href="/createTest">createTest</a>
 			</li>
+			<li aria-current={$page.url.pathname.startsWith('/paddle') ? 'page' : undefined}>
+				<a href="/paddle">paddle</a>
+			</li>
+			<li aria-current={$page.url.pathname.startsWith('/clientComponentTest') ? 'page' : undefined}>
+				<a href="/clientComponentTest">clientComponentTest</a>
+			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />

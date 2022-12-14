@@ -5,6 +5,11 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		%sveltekit.head%
+		<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+		<script type="text/javascript">
+			Paddle.Environment.set('sandbox');
+			Paddle.Setup({ vendor: 9356 });
+		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
