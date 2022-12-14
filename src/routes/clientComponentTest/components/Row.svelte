@@ -14,30 +14,31 @@
 
 	const { updateTextRowCommand } = CommandStore;
 	let textAreaString: string = row.text;
-	let oldTextAreaString: string;
 	$: rowText = row.text;
 
 	useEffect(
 		() => {
-			if (textAreaString !== row.text) textAreaString = rowText;
+			const timeout = setTimeout(() => {
+				console.log('updateTextRowCommand');
+				if (textAreaString !== rowText) updateTextRowCommand(row, textAreaString);
+			}, 350);
+			return () => {
+				clearTimeout(timeout);
+			};
+		},
+		() => [textAreaString, updateTextRowCommand, rowText]
+	);
+
+	useEffect(
+		() => {
+			if (textAreaString !== rowText) textAreaString = rowText;
 			return () => {};
 		},
 		() => [rowText]
 	);
-
-	function handleKeydown(event: { key: any; code: any }) {
-		//check if key is space
-		if (event.key === ' ') {
-			if (oldTextAreaString !== textAreaString) {
-				console.log('updateTextRowCommand');
-				updateTextRowCommand(row, textAreaString);
-				oldTextAreaString = textAreaString;
-			}
-		}
-	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<!-- <svelte:window on:keydown={handleKeydown}/> -->
 
 <div class="flex space-x-2 items-center justify-center">
 	{#if row.item === undefined}
