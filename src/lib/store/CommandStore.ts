@@ -45,6 +45,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddCodeRowItemCommand(rowId, code);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -52,6 +53,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveCodeRowItemCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -59,6 +61,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddTextRowCommand(text);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -66,6 +69,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveTextRowCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -73,6 +77,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createUpdateTextRowCommand(row, text);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -80,6 +85,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddImageRowItemCommand(rowId, imageUrl);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -87,6 +93,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveImageRowCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -94,6 +101,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddEmbedRowItemCommand(rowId, embedUrl);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -101,6 +109,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveEmbedRowItemCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -108,6 +117,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddNoteCommand(note);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -115,6 +125,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveNoteCommand(note);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -122,6 +133,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createUpdateNoteCommand(note, text);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -129,6 +141,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddCommentCommand(comment, note, text);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -136,6 +149,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveCommentCommand(comment, note);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -143,6 +157,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createUpdateCommentCommand(comment, note, text);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -150,6 +165,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddSeparatorRowItemCommand(rowId);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -157,6 +173,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveSeparatorRowItemCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -164,6 +181,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createAddVideoRowItemCommand(rowId, videoUrl);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),
@@ -171,6 +189,7 @@ const CommandStore = {
 		update((stack: UndoRedoStack) => {
 			const command = createRemoveVideoRowCommand(row);
 			stack.undoStack.push(command);
+			stack.redoStack = [];
 			command.execute();
 			return stack;
 		}),

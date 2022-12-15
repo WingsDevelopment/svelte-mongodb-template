@@ -19,7 +19,6 @@
 	useEffect(
 		() => {
 			const timeout = setTimeout(() => {
-				console.log('updateTextRowCommand');
 				if (textAreaString !== rowText) updateTextRowCommand(row, textAreaString);
 			}, 350);
 			return () => {
@@ -37,8 +36,6 @@
 		() => [rowText]
 	);
 </script>
-
-<!-- <svelte:window on:keydown={handleKeydown}/> -->
 
 <div class="flex space-x-2 items-center justify-center">
 	{#if row.item === undefined}
